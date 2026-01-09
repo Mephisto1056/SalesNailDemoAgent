@@ -30,14 +30,31 @@ jobs:
           npm run build --if-present
           npm run test --if-present
           
-          # Prepare Standalone
-          cp -r public .next/standalone/public
-          mkdir -p .next/standalone/.next/static
-          cp -r .next/static/* .next/standalone/.next/static/
+          # Prepare Standalone and Handle Nested Structure
+          # Check structure (if monorepo-like detection occurred)
+          DEST_PREFIX=""
+          if [ -d ".next/standalone/b2b-sales-game" ]; then
+            DEST_PREFIX="b2b-sales-game/"
+          fi
           
-          # Add start script to standalone package.json
+          echo "Detected Standalone Prefix: '$DEST_PREFIX'"
+          
+          # Copy public and static assets to the correct location
+          if [ -d "public" ]; then
+            cp -r public ".next/standalone/${DEST_PREFIX}public"
+          fi
+          
+          mkdir -p ".next/standalone/${DEST_PREFIX}.next/static"
+          cp -r .next/static/* ".next/standalone/${DEST_PREFIX}.next/static/"
+          
+          # Create start script at the root of standalone
           cd .next/standalone
-          node -e "let pkg=require('./package.json'); pkg.scripts={start: 'node server.js'}; require('fs').writeFileSync('package.json', JSON.stringify(pkg, null, 2));"
+          START_CMD="node server.js"
+          if [ -n "$DEST_PREFIX" ]; then
+            START_CMD="node ${DEST_PREFIX}server.js"
+          fi
+          
+          echo "{\"scripts\":{\"start\":\"$START_CMD\"}}" > package.json
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
