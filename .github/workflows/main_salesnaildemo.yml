@@ -52,5 +52,5 @@ jobs:
         with:
           app-name: 'SalesNailDemo'
           slot-name: 'Production'
-          package: .
+          package: ./b2b-sales-game
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_686AD1AB167B43AEA9BC2092D4A983E4 }}
