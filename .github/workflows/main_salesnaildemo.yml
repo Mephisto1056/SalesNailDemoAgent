@@ -59,9 +59,9 @@ jobs:
             # Remove trailing slash for cd
             DIR_NAME=${DEST_PREFIX%/}
             # Add debug listing to startup command
-            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -F && echo '--- SUBDIR INFO ---' && ls -F $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && node server.js"
+            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- SUBDIR INFO ---' && ls -Fa $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && node server.js"
           else
-             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -F && echo '--- STARTING ---' && node server.js"
+             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- STARTING ---' && node server.js"
           fi
           
           # Force overwrite package.json
@@ -71,6 +71,11 @@ jobs:
           # Verify content
           echo "Verifying package.json content:"
           cat package.json
+
+      - name: Debug Artifact Content
+        run: |
+          echo "--- Listing Standalone Directory ---"
+          ls -R b2b-sales-game/.next/standalone
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
