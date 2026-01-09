@@ -47,6 +47,10 @@ jobs:
           mkdir -p ".next/standalone/${DEST_PREFIX}.next/static"
           cp -r .next/static/* ".next/standalone/${DEST_PREFIX}.next/static/"
           
+          # Copy missing build files (BUILD_ID, required-server-files.json)
+          cp .next/BUILD_ID ".next/standalone/${DEST_PREFIX}.next/BUILD_ID"
+          cp .next/required-server-files.json ".next/standalone/${DEST_PREFIX}.next/required-server-files.json"
+          
           # Create start script at the root of standalone
           cd .next/standalone
           START_CMD="node server.js"
