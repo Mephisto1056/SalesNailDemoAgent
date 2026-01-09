@@ -53,4 +53,5 @@ jobs:
           app-name: 'SalesNailDemo'
           slot-name: 'Production'
           package: ./b2b-sales-game
+          startup-command: 'npm start'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_686AD1AB167B43AEA9BC2092D4A983E4 }}
