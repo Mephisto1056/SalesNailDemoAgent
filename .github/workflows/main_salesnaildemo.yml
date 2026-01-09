@@ -50,11 +50,20 @@ jobs:
           # Create start script at the root of standalone
           cd .next/standalone
           START_CMD="node server.js"
+          # If nested structure, we must cd into the directory so Next.js finds .next
           if [ -n "$DEST_PREFIX" ]; then
-            START_CMD="node ${DEST_PREFIX}server.js"
+            # Remove trailing slash for cd
+            DIR_NAME=${DEST_PREFIX%/}
+            START_CMD="cd $DIR_NAME && node server.js"
           fi
           
+          # Force overwrite package.json
+          rm -f package.json
           echo "{\"scripts\":{\"start\":\"$START_CMD\"}}" > package.json
+          
+          # Verify content
+          echo "Verifying package.json content:"
+          cat package.json
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v4
