@@ -67,22 +67,10 @@ jobs:
             # Remove trailing slash for cd
             DIR_NAME=${DEST_PREFIX%/}
             # Create package.json with nested structure start command
-            cat > package.json << 'EOF'
-{
-  "scripts": {
-    "start": "sh -c 'echo --- DEBUG INFO --- && pwd && ls -Fa && echo --- SUBDIR INFO --- && ls -Fa b2b-sales-game && echo --- STARTING --- && cd b2b-sales-game && if [ -d _next_build ]; then mv _next_build .next; fi && node server.js'"
-  }
-}
-EOF
+            printf '{\n  "scripts": {\n    "start": "sh -c '"'"'echo --- DEBUG INFO --- && pwd && ls -Fa && echo --- SUBDIR INFO --- && ls -Fa b2b-sales-game && echo --- STARTING --- && cd b2b-sales-game && if [ -d _next_build ]; then mv _next_build .next; fi && node server.js'"'"'"\n  }\n}\n' > package.json
           else
             # Create package.json for flat structure
-            cat > package.json << 'EOF'
-{
-  "scripts": {
-    "start": "sh -c 'echo --- DEBUG INFO --- && pwd && ls -Fa && if [ -d _next_build ]; then mv _next_build .next; fi && echo --- STARTING --- && node server.js'"
-  }
-}
-EOF
+            printf '{\n  "scripts": {\n    "start": "sh -c '"'"'echo --- DEBUG INFO --- && pwd && ls -Fa && if [ -d _next_build ]; then mv _next_build .next; fi && echo --- STARTING --- && node server.js'"'"'"\n  }\n}\n' > package.json
           fi
           
           # Verify content
