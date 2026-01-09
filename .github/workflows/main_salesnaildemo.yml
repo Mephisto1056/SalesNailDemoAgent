@@ -58,24 +58,38 @@ jobs:
           
           # Create start script at the root of standalone
           cd .next/standalone
-          START_CMD="node server.js"
+          
+          # Force overwrite package.json with proper JSON
+          rm -f package.json
+          
           # If nested structure, we must cd into the directory so Next.js finds .next
           if [ -n "$DEST_PREFIX" ]; then
             # Remove trailing slash for cd
             DIR_NAME=${DEST_PREFIX%/}
-            # Add debug listing and RENAME _next_build back to .next
-            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- SUBDIR INFO ---' && ls -Fa $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && if [ -d \"_next_build\" ]; then mv _next_build .next; fi && node server.js"
+            # Create package.json with nested structure start command
+            cat > package.json << 'EOF'
+{
+  "scripts": {
+    "start": "sh -c 'echo --- DEBUG INFO --- && pwd && ls -Fa && echo --- SUBDIR INFO --- && ls -Fa b2b-sales-game && echo --- STARTING --- && cd b2b-sales-game && if [ -d _next_build ]; then mv _next_build .next; fi && node server.js'"
+  }
+}
+EOF
           else
-             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && if [ -d \"_next_build\" ]; then mv _next_build .next; fi && echo '--- STARTING ---' && node server.js"
+            # Create package.json for flat structure
+            cat > package.json << 'EOF'
+{
+  "scripts": {
+    "start": "sh -c 'echo --- DEBUG INFO --- && pwd && ls -Fa && if [ -d _next_build ]; then mv _next_build .next; fi && echo --- STARTING --- && node server.js'"
+  }
+}
+EOF
           fi
-          
-          # Force overwrite package.json
-          rm -f package.json
-          echo "{\"scripts\":{\"start\":\"$START_CMD\"}}" > package.json
           
           # Verify content
           echo "Verifying package.json content:"
           cat package.json
+          echo "Validating JSON syntax:"
+          node -e "JSON.parse(require('fs').readFileSync('package.json', 'utf8'))" && echo "✓ JSON is valid"
 
       - name: Debug Artifact Content
         run: |
