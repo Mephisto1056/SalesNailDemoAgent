@@ -54,7 +54,10 @@ jobs:
           if [ -n "$DEST_PREFIX" ]; then
             # Remove trailing slash for cd
             DIR_NAME=${DEST_PREFIX%/}
-            START_CMD="cd $DIR_NAME && node server.js"
+            # Add debug listing to startup command
+            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -F && echo '--- SUBDIR INFO ---' && ls -F $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && node server.js"
+          else
+             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -F && echo '--- STARTING ---' && node server.js"
           fi
           
           # Force overwrite package.json
