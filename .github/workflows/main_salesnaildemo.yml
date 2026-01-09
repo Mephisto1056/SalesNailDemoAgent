@@ -51,6 +51,11 @@ jobs:
           cp .next/BUILD_ID ".next/standalone/${DEST_PREFIX}.next/BUILD_ID"
           cp .next/required-server-files.json ".next/standalone/${DEST_PREFIX}.next/required-server-files.json"
           
+          # Rename .next to _next_build to ensure it is not ignored by Azure deployment
+          if [ -d ".next/standalone/${DEST_PREFIX}.next" ]; then
+            mv ".next/standalone/${DEST_PREFIX}.next" ".next/standalone/${DEST_PREFIX}_next_build"
+          fi
+          
           # Create start script at the root of standalone
           cd .next/standalone
           START_CMD="node server.js"
@@ -58,10 +63,10 @@ jobs:
           if [ -n "$DEST_PREFIX" ]; then
             # Remove trailing slash for cd
             DIR_NAME=${DEST_PREFIX%/}
-            # Add debug listing to startup command
-            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- SUBDIR INFO ---' && ls -Fa $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && node server.js"
+            # Add debug listing and RENAME _next_build back to .next
+            START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- SUBDIR INFO ---' && ls -Fa $DIR_NAME && echo '--- STARTING ---' && cd $DIR_NAME && if [ -d \"_next_build\" ]; then mv _next_build .next; fi && node server.js"
           else
-             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && echo '--- STARTING ---' && node server.js"
+             START_CMD="echo '--- DEBUG INFO ---' && pwd && ls -Fa && if [ -d \"_next_build\" ]; then mv _next_build .next; fi && echo '--- STARTING ---' && node server.js"
           fi
           
           # Force overwrite package.json
